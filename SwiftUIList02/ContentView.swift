@@ -8,32 +8,37 @@
 import SwiftUI
 
 struct ContentView: View {
-	@State var selected = 0
-
-	var rot: Angle {
-		get { return .degrees(Double(-selected * 10)) }
-	}
+	var items = (0..<100)
 
 	var body: some View {
 		GeometryReader { geo in
-			List(0..<100) { n in
-				ZStack {
-					Color.blue.opacity(0.3)
-					Text("Item:\(n)")
-				}
-				.contentShape(Rectangle())
-				.onAppear {
-					print(n)
-				}
-				.onTapGesture {
-					selected = n
-				}
+			List(items) { n in
+				ItemRow(index: n)
 			}
-			.rotationEffect(rot, anchor: .topLeading)
 			.frame(width: geo.size.height, height: geo.size.width)
-			.animation(.default)
+			.rotationEffect(.degrees(-90), anchor: .bottomLeading)
+			.transformEffect(.init(translationX: geo.size.width, y: 0))
+			.scaleEffect(x: 1, y: -1)
 		}
-    }
+	}
+}
+
+struct ItemRow: View {
+	@State var index = 0
+
+	var body: some View {
+		GeometryReader { geo in
+			ZStack {
+				Color.blue.opacity(0.3)
+				Text("Item: \(index)")
+			}
+			.scaleEffect(x: -1, y: 1)
+			.contentShape(Rectangle())
+			.onTapGesture {
+				print("\(index)")
+			}
+		}
+	}
 }
 
 struct ContentView_Previews: PreviewProvider {
