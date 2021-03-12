@@ -10,21 +10,26 @@ import SwiftUI
 struct ContentView: View {
 	var body: some View {
 		VStack {
-			ItemList(items: (0..<100))
+			ItemList(items: (0..<100).map { ItemData(index: $0) })
 				.frame(height: 100)
-			ItemList(items: (500..<600))
-			ItemList(items: (1000..<1100))
+			ItemList(items: (500..<600).map { ItemData(index: $0) })
+			ItemList(items: (1000..<1100).map { ItemData(index: $0) })
 		}
 	}
 }
 
+struct ItemData {
+	var index = 0
+	var check = false
+}
+
 struct ItemList: View {
-	@State var items: Range<Int>
+	@State var items: [ItemData]
 
 	var body: some View {
 		GeometryReader { geo in
-			List(items) { n in
-				ItemRow(index: n)
+			List(0..<items.count) { i in
+				ItemRow(item: $items[i])
 					.frame(height: 100)
 					.contentShape(Rectangle())
 			}
@@ -37,23 +42,21 @@ struct ItemList: View {
 }
 
 struct ItemRow: View {
-	@State var index = 0
-	@State var check = false
+	@Binding var item: ItemData
 
 	var body: some View {
 		GeometryReader { geo in
 			ZStack {
-				Color.blue.opacity(check ? 0.5 : 0.3)
+				Color.blue.opacity(item.check ? 0.5 : 0.3)
 					.cornerRadius(8)
-				Text("\(index)")
+				Text("\(item.index)")
 			}
 			.frame(width: geo.size.height, height: geo.size.width)
 			.rotationEffect(.degrees(90), anchor: .topTrailing)
 			.transformEffect(.init(translationX: 0, y: geo.size.height))
 			.scaleEffect(x: -1, y: 1)
 			.onTapGesture {
-				print("\(index)")
-				check.toggle()
+				item.check.toggle()
 			}
 		}
 	}
